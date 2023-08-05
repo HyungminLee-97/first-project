@@ -1,2 +1,1 @@
-# hm-project
-# hm-project
+# first-project
