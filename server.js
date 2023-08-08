@@ -54,10 +54,18 @@ app.post("/add", (req, res) => {
       { _id: numberOfPost + 1, title: req.body.title, date: req.body.date },
       function (err, result) {
         console.log("저장완료");
+        // "counter" collection의 totalPost 항목 1 증가시키기(수정)
+        db.collection("counter").updateOne(
+          { name: "numberOfPost" },
+          { $inc: { totalPost: 1 } },
+          function (err, result) {
+            if (err) {
+              return console.log(err);
+            }
+          }
+        );
       }
     );
-
-    // "counter" collection의 totalPost 항목 1 증가.
   });
 });
 
