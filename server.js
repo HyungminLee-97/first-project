@@ -60,5 +60,11 @@ app.post("/add", (req, res) => {
 
 // "/list" 출력
 app.get("/list", (req, res) => {
-  res.render("list.ejs");
+  //db에 저장된 post라는 collection 안의 제목이 @인 데이터 꺼내기
+  db.collection("post")
+    .find()
+    .toArray(function (err, result) {
+      console.log(result);
+      res.render("list.ejs", { posts: result });
+    });
 });
