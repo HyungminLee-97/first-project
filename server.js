@@ -43,19 +43,22 @@ app.get("/write", (req, res) => {
   res.sendFile(__dirname + "/write.html");
 });
 
-// "/add" 경로로 POST 요청 시,
+// "/add" 경로로 POST 요청 시, db 중 couter라는 파일을 찾아서,거기 저장된 총 게시물 수 가져오기
+// 그 게시물 갯수 이용해서 id를 만들어서 거기에 저장하시오.
 app.post("/add", (req, res) => {
   res.send("전송 완료");
-  console.log(req.body.title);
-  console.log(req.body.date);
-  // 여기서 저장된 데이터는 req애 저장되어 있음
-  // req에 저장된 데이터 꺼내 쓰려면 body-parser 라이브러리 설치 필요
-  db.collection("post").insertOne(
-    { title: req.body.title, date: req.body.date },
-    function (err, result) {
-      console.log("저장완료");
-    }
-  );
+  db.collection("counter").findOne({ name: "numberOfPost" }, (err, result) => {
+    console.log(result.totalPost);
+    let numberOfPost = result.totalPost;
+    db.collection("post").insertOne(
+      { _id: numberOfPost + 1, title: req.body.title, date: req.body.date },
+      function (err, result) {
+        console.log("저장완료");
+      }
+    );
+
+    // "counter" collection의 totalPost 항목 1 증가.
+  });
 });
 
 // "/list" 출력
