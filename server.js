@@ -79,3 +79,8 @@ app.get("/list", (req, res) => {
       res.render("list.ejs", { posts: result });
     });
 });
+
+// "/delete" 경로로 DELETE 요청 처리
+app.delete("/delete", (req, res) => {
+  console.log(req.body);
+});
