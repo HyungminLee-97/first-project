@@ -50,12 +50,19 @@
     <ul class="list-group">
       <% for(let i = 0; i < posts.length; i++) { %>
       <li class="list-group-item">
+        <p>글번호: <%= posts[i]._id%></p>
         <!--서버에서 가져온 할 일 리스트-->
         <h4>할 일 제목: <%= posts[i].title %></h4>
         <p>할 일 마감날짜: <%= posts[i].date %></p>
         <!--서버에서 가져온 할 일 리스트-->
         <!--삭제 버튼-->
-        <button type="button" class="btn btn-dark">삭제</button>
+        <button
+          type="button"
+          class="delete btn btn-dark"
+          data-id="<%= posts[i]._id%>"
+        >
+          삭제
+        </button>
         <!--삭제 버튼-->
       </li>
       <% } %>
@@ -65,13 +72,15 @@
     <!--CDN방식 jQuery 설치-->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 
+    <!--delete 버튼 클릭 시, 삭제-->
     <script>
-      $.ajax({
-        method: "DELETE",
-        url: "/delete",
-        data: "게시물번호",
-      }).done(function (result) {
-        console.log();
+      $(".delete").click(function (e) {
+        let postNum = e.target.dataset.id;
+        $.ajax({
+          method: "DELETE",
+          url: "/delete",
+          data: { _id: postNum },
+        }).done(function (result) {});
       });
     </script>
 

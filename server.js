@@ -83,4 +83,12 @@ app.get("/list", (req, res) => {
 // "/delete" 경로로 DELETE 요청 처리
 app.delete("/delete", (req, res) => {
   console.log(req.body);
+
+  // 문자로 출력되는  "_id"를 정수로 변환 후, 할당
+  req.body._id = parseInt(req.body._id);
+
+  // req.body에 담겨온 게시물 번호를 가진 글을 db에서 찾아 삭제
+  db.collection("post").deleteOne(req.body, function (err, result) {
+    console.log("삭제완료");
+  });
 });
