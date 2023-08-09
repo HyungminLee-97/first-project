@@ -5,6 +5,8 @@ const MongoClient = require("mongodb").MongoClient;
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
+//미들웨어
+app.use("/public", express.static("public"));
 // db 선언
 let db;
 
