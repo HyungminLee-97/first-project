@@ -76,11 +76,20 @@
     <script>
       $(".delete").click(function (e) {
         let postNum = e.target.dataset.id;
+        let nowClick = $(this);
         $.ajax({
           method: "DELETE",
           url: "/delete",
           data: { _id: postNum },
-        }).done(function (result) {});
+        })
+          .done(function (result) {
+            //삭제버튼을 누른 <li> 요소를 제거/안보이게
+            console.log("성공했습니다");
+            nowClick.parent("li").fadeOut();
+          })
+          .fail(function (a, b, c) {
+            console.log("실패했습니다", a, b, c);
+          });
       });
     </script>
 

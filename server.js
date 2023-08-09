@@ -90,5 +90,6 @@ app.delete("/delete", (req, res) => {
   // req.body에 담겨온 게시물 번호를 가진 글을 db에서 찾아 삭제
   db.collection("post").deleteOne(req.body, function (err, result) {
     console.log("삭제완료");
+    res.status(200).send({ message: "성공했습니다" });
   });
 });
