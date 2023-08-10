@@ -2,11 +2,13 @@
 const express = require("express");
 const app = express();
 const MongoClient = require("mongodb").MongoClient;
+const methodOverride = require("method-override");
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 //미들웨어
 app.use("/public", express.static("public"));
+app.use(methodOverride("_method"));
 // db 선언
 let db;
 
@@ -37,12 +39,12 @@ app.get("/beauty", (req, res) => {
 
 // "/" 출력
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/index.html");
+  res.render("index.ejs");
 });
 
 // "/write" 출력
 app.get("/write", (req, res) => {
-  res.sendFile(__dirname + "/write.html");
+  res.render("write.ejs");
 });
 
 // "/add" 경로로 POST 요청 시, db 중 couter라는 파일을 찾아서,거기 저장된 총 게시물 수 가져오기
@@ -103,6 +105,17 @@ app.get("/detail/:id", function (req, res) {
     function (err, result) {
       console.log(result);
       res.render("detail.ejs", { data: result });
+    }
+  );
+});
+
+// edit 페이지 보여주기
+app.get("/edit/:id", (req, res) => {
+  db.collection("post").findOne(
+    { _id: parseInt(req.params.id) },
+    (err, result) => {
+      console.log(result);
+      res.render("edit.ejs", { post: result });
     }
   );
 });
