@@ -6,7 +6,6 @@ const methodOverride = require("method-override");
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
-//미들웨어
 app.use("/public", express.static("public"));
 app.use(methodOverride("_method"));
 // db 선언
@@ -25,17 +24,7 @@ MongoClient.connect(
     });
   }
 );
-//기본 세팅(expres 라이브러리, body-parser, Mongodb) - 끝
-
-// "/pet" 출력
-app.get("/pet", (req, res) => {
-  res.send("펫 용품 쇼핑할 수 있는 페이지");
-});
-
-// "/beauty" 출력
-app.get("/beauty", (req, res) => {
-  res.send("뷰티용품 쇼핑할 수 있는 페이지");
-});
+//기본 세팅(expres 라이브러리, body-parser, Mongodb, methodOverride) - 끝
 
 // "/" 출력
 app.get("/", (req, res) => {
@@ -116,6 +105,18 @@ app.get("/edit/:id", (req, res) => {
     (err, result) => {
       console.log(result);
       res.render("edit.ejs", { post: result });
+    }
+  );
+});
+
+//서버로 PUT 요청 들어오면 게시글 수정 처리
+app.put("/edit", (req, res) => {
+  db.collection("post").updateOne(
+    { _id: parseInt(req.body.id) },
+    { $set: { title: req.body.title, date: req.body.date } },
+    (err, result) => {
+      console.log("수정 완료");
+      res.redirect("/list");
     }
   );
 });

@@ -21,9 +21,15 @@
     <!--작성 폼-->
     <div class="container mt-3">
       <!--form 내용 서버로 전달하려면 꼭 있어야 하는 속성-->
-      <form action="/add?_method=PUT" method="POST">
+      <form action="/edit?_method=PUT" method="POST">
         <div class="form-group">
           <label>오늘의 할일</label>
+          <input
+            type="text"
+            value="<%= post._id %>"
+            name="id"
+            style="display: none"
+          />
           <input
             value="<%= post.title %>"
             type="text"
