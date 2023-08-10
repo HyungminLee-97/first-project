@@ -120,3 +120,55 @@ app.put("/edit", (req, res) => {
     }
   );
 });
+
+//Session 방식 로그인 기능 세팅
+const passport = require("passport");
+const localStrategy = require("passport-local").strategy;
+const session = require("express-session");
+
+app.use(session({ secret: "secret", resave: true, saveUninitialized: false }));
+app.use(passport.initialize());
+app.use(passport.session());
+
+// "/login.ejs" 이동
+app.get("/login", (req, res) => {
+  res.render("login.ejs");
+});
+
+//login 시, index로 리다이렉트
+app.post(
+  "/login",
+  passport.authenticate("local", {
+    failureRedirect: "/fail",
+  }),
+  (req, res) => {
+    res.redirect("/");
+  }
+);
+
+// 아이디 비번 인증
+passport.use(
+  new LocalStrategy(
+    {
+      usernameField: "id",
+      passwordField: "pw",
+      session: true,
+      passReqToCallback: false,
+    },
+    function (writtenId, writtenPw, done) {
+      db.collection("login").findOne({ id: writtenId }, function (err, result) {
+        if (err) return done(err);
+
+        if (!result)
+          return done(null, false, { message: "존재하지 않는 아이디 입니다." });
+        if (writtenPw == result.pw) {
+          return done(null, result);
+        } else {
+          return done(null, false, {
+            message: "비밀번호가 일치하지 않습니다.",
+          });
+        }
+      });
+    }
+  )
+);
