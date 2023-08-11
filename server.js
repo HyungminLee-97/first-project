@@ -123,10 +123,12 @@ app.put("/edit", (req, res) => {
 
 //Session 방식 로그인 기능 세팅
 const passport = require("passport");
-const localStrategy = require("passport-local").strategy;
+const LocalStrategy = require("passport-local").Strategy;
 const session = require("express-session");
 
-app.use(session({ secret: "secret", resave: true, saveUninitialized: false }));
+app.use(
+  session({ secret: "비밀코드", resave: true, saveUninitialized: false })
+);
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -135,6 +137,7 @@ app.get("/login", (req, res) => {
   res.render("login.ejs");
 });
 
+//아이디 비번 검증
 //login 시, index로 리다이렉트
 app.post(
   "/login",
@@ -146,7 +149,7 @@ app.post(
   }
 );
 
-// 아이디 비번 인증
+// 검증 코드
 passport.use(
   new LocalStrategy(
     {
@@ -156,6 +159,7 @@ passport.use(
       passReqToCallback: false,
     },
     function (writtenId, writtenPw, done) {
+      console.log(writtenId, writtenPw);
       db.collection("login").findOne({ id: writtenId }, function (err, result) {
         if (err) return done(err);
 
@@ -172,3 +176,10 @@ passport.use(
     }
   )
 );
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+passport.deserializeUser((id, done) => {
+  done(null, {});
+});
