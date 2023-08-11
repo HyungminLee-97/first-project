@@ -149,6 +149,20 @@ app.post(
   }
 );
 
+// 마이페이지
+app.get("/mypage", loginVerification, (req, res) => {
+  console.log(req.user);
+  res.render("mypage.ejs", { user: req.user });
+});
+
+function loginVerification(req, res, next) {
+  if (req.user) {
+    next();
+  } else {
+    res.send("로그인 상태가 아닙니다.");
+  }
+}
+
 // 검증 코드
 passport.use(
   new LocalStrategy(
@@ -181,5 +195,7 @@ passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 passport.deserializeUser((id, done) => {
-  done(null, {});
+  db.collection("login").findOne({ id: id }, function (err, result) {
+    done(null, result);
+  });
 });
