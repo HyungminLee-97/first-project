@@ -121,6 +121,31 @@ app.put("/edit", (req, res) => {
   );
 });
 
+// "/signin" 이동
+app.get("/signin", (req, res) => {
+  res.render("signin.ejs");
+});
+// db.collection("login")에 입력된 회원 정보 저장
+app.post("/signin", (req, res) => {
+  res.send("전송 완료");
+  let userName = req.body.name;
+  let userNumber = req.body.number;
+  let userId = req.body.id;
+  let userPw = req.body.pw;
+
+  db.collection("login").insertOne(
+    {
+      name: userName,
+      phone: userNumber,
+      id: userId,
+      pw: userPw,
+    },
+    (err, result) => {
+      console.log("회원가입 완료되었습니다.");
+    }
+  );
+});
+
 //Session 방식 로그인 기능 세팅
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
