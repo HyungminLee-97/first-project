@@ -64,6 +64,16 @@ app.post("/add", (req, res) => {
   });
 });
 
+//"/list" 검색 기능
+app.get("/search", (req, res) => {
+  console.log(req.query.value);
+  db.collection("post")
+    .find({ title: req.query.value })
+    .toArray((err, result) => {
+      console.log(result);
+    });
+});
+
 // "/list" 출력
 app.get("/list", (req, res) => {
   //db에 저장된 post라는 collection 안의 제목이 @인 데이터 꺼내기

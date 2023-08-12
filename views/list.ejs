@@ -20,6 +20,15 @@
     <!--본문-->
     <div class="container">
       <h4 class="ml-2 my-3 text-center">list 페이지</h4>
+
+      <!--검색창-->
+      <div class="container input-group mb-2">
+        <input class="form-control" id="search-input" />
+        <button class="input-group-append btn btn-danger" id="search">
+          검색
+        </button>
+      </div>
+
       <!--반복문 이용-->
       <ul class="list-group">
         <% for(let i = 0; i < posts.length; i++) { %>
@@ -46,6 +55,14 @@
 
     <!--CDN방식 jQuery 설치-->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+    <!--search 기능-->
+    <script>
+      $("#search").click(function () {
+        let input_data = $("#search-input").val();
+        window.location.replace("/search?value=" + input_data);
+      });
+    </script>
 
     <!--delete 버튼 클릭 시, 삭제-->
     <script>
