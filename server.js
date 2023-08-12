@@ -4,27 +4,29 @@ const app = express();
 const MongoClient = require("mongodb").MongoClient;
 const methodOverride = require("method-override");
 const bodyParser = require("body-parser");
+
+require("dotenv").config();
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.use("/public", express.static("public"));
 app.use(methodOverride("_method"));
-// db 선언
+
+//.env - 시작
+//db 선언
 let db;
 
-MongoClient.connect(
-  "mongodb+srv://admin:qwer1234@cluster0.gq7c239.mongodb.net/?retryWrites=true&w=majority",
-  function (err, client) {
-    if (err) return console.log(err);
+MongoClient.connect(process.env.DB_URL, function (err, client) {
+  if (err) return console.log(err);
+  // db 연결
+  db = client.db("hm-project");
+  app.listen(process.env.PORT, function () {
+    console.log("8080 포트가 열렸습니다.");
+  });
+});
+//.env - 끝
 
-    // db 연결
-    db = client.db("hm-project");
-
-    app.listen(8080, function () {
-      console.log("8080포트가 열렸습니다.");
-    });
-  }
-);
-//기본 세팅(expres 라이브러리, body-parser, Mongodb, methodOverride) - 끝
+//기본 세팅(expres 라이브러리, body-parser, Mongodb, methodOverride, dotenv) - 끝
 
 // "/" 출력
 app.get("/", (req, res) => {
@@ -121,13 +123,14 @@ app.put("/edit", (req, res) => {
   );
 });
 
+//회원 가입 기능
 // "/signin" 이동
 app.get("/signin", (req, res) => {
   res.render("signin.ejs");
 });
 // db.collection("login")에 입력된 회원 정보 저장
 app.post("/signin", (req, res) => {
-  res.send("전송 완료");
+  res.send("회원가입 성공.");
   let userName = req.body.name;
   let userNumber = req.body.number;
   let userId = req.body.id;
