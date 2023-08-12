@@ -71,6 +71,7 @@ app.get("/search", (req, res) => {
     .find({ title: req.query.value })
     .toArray((err, result) => {
       console.log(result);
+      res.render("search.ejs", { posts: result });
     });
 });
 
