@@ -66,9 +66,24 @@ app.post("/add", (req, res) => {
 
 //"/list" 검색 기능
 app.get("/search", (req, res) => {
-  console.log(req.query.value);
+  let SearchConditions = [
+    {
+      $search: {
+        index: "titleSearch",
+        text: {
+          query: req.query.value,
+          path: "title",
+        },
+      },
+    },
+    // _id 오름차순으로 정렬 (-1 입력 -> 내림차순 정렬)
+    { $sort: { _id: 1 } },
+    // // 게시물 2개까지만 가져오기 (_id 순서대로)
+    // { $limit: 2 },
+  ];
+
   db.collection("post")
-    .find({ title: req.query.value })
+    .aggregate(SearchConditions)
     .toArray((err, result) => {
       console.log(result);
       res.render("search.ejs", { posts: result });
