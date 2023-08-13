@@ -264,3 +264,9 @@ app.delete("/delete", (req, res) => {
     res.status(200).send({ message: "성공했습니다" });
   });
 });
+
+//예제
+app.use("/shop", require("./routes/shop.js"));
+
+//문제
+app.use("/board/sub", require("./routes/board.js"));
