@@ -38,32 +38,6 @@ app.get("/write", (req, res) => {
   res.render("write.ejs");
 });
 
-// "/add" 경로로 POST 요청 시, db 중 couter라는 파일을 찾아서,거기 저장된 총 게시물 수 가져오기
-// 그 게시물 갯수 이용해서 id를 만들어서 거기에 저장하시오.
-app.post("/add", (req, res) => {
-  res.send("전송 완료");
-  db.collection("counter").findOne({ name: "numberOfPost" }, (err, result) => {
-    console.log(result.totalPost);
-    let numberOfPost = result.totalPost;
-    db.collection("post").insertOne(
-      { _id: numberOfPost + 1, title: req.body.title, date: req.body.date },
-      function (err, result) {
-        console.log("저장완료");
-        // "counter" collection의 totalPost 항목 1 증가시키기(수정)
-        db.collection("counter").updateOne(
-          { name: "numberOfPost" },
-          { $inc: { totalPost: 1 } },
-          function (err, result) {
-            if (err) {
-              return console.log(err);
-            }
-          }
-        );
-      }
-    );
-  });
-});
-
 //"/list" 검색 기능
 app.get("/search", (req, res) => {
   let SearchConditions = [
@@ -101,20 +75,6 @@ app.get("/list", (req, res) => {
     });
 });
 
-// "/delete" 경로로 DELETE 요청 처리
-app.delete("/delete", (req, res) => {
-  console.log(req.body);
-
-  // 문자로 출력되는  "_id"를 정수로 변환 후, 할당
-  req.body._id = parseInt(req.body._id);
-
-  // req.body에 담겨온 게시물 번호를 가진 글을 db에서 찾아 삭제
-  db.collection("post").deleteOne(req.body, function (err, result) {
-    console.log("삭제완료");
-    res.status(200).send({ message: "성공했습니다" });
-  });
-});
-
 // "/detail"로 접속하면 detail.ejs 접속
 app.get("/detail/:id", function (req, res) {
   db.collection("post").findOne(
@@ -145,32 +105,6 @@ app.put("/edit", (req, res) => {
     (err, result) => {
       console.log("수정 완료");
       res.redirect("/list");
-    }
-  );
-});
-
-//회원 가입 기능
-// "/signin" 이동
-app.get("/signin", (req, res) => {
-  res.render("signin.ejs");
-});
-// db.collection("login")에 입력된 회원 정보 저장
-app.post("/signin", (req, res) => {
-  res.send("회원가입 성공.");
-  let userName = req.body.name;
-  let userNumber = req.body.number;
-  let userId = req.body.id;
-  let userPw = req.body.pw;
-
-  db.collection("login").insertOne(
-    {
-      name: userName,
-      phone: userNumber,
-      id: userId,
-      pw: userPw,
-    },
-    (err, result) => {
-      console.log("회원가입 완료되었습니다.");
     }
   );
 });
@@ -251,5 +185,82 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((id, done) => {
   db.collection("login").findOne({ id: id }, function (err, result) {
     done(null, result);
+  });
+});
+
+//회원 가입 기능
+// "/signin" 이동
+app.get("/signin", (req, res) => {
+  res.render("signin.ejs");
+});
+// db.collection("login")에 입력된 회원 정보 저장
+app.post("/signin", (req, res) => {
+  let userName = req.body.name;
+  let userNumber = req.body.number;
+  let userId = req.body.id;
+  let userPw = req.body.pw;
+
+  db.collection("login").insertOne(
+    {
+      name: userName,
+      phone: userNumber,
+      id: userId,
+      pw: userPw,
+    },
+    (err, result) => {
+      res.redirect("/login");
+      console.log("회원가입 완료");
+    }
+  );
+});
+
+// "/add" 경로로 POST 요청 시, db 중 counter라는 파일을 찾아서, 거기 저장된 총 게시물 수 가져오기
+// 그 게시물 갯수 이용해서 id를 만들어서 거기에 저장하시오.
+app.post("/add", (req, res) => {
+  res.send("전송 완료");
+  db.collection("counter").findOne({ name: "numberOfPost" }, (err, result) => {
+    console.log(result.totalPost);
+    let numberOfPost = result.totalPost;
+
+    // posting 기능
+    let postInput = {
+      _id: numberOfPost + 1,
+      writer: req.user._id,
+      title: req.body.title,
+      date: req.body.date,
+    };
+
+    db.collection("post").insertOne(postInput, function (err, result) {
+      console.log("저장완료");
+      // "counter" collection의 totalPost 항목 1 증가시키기(수정)
+      db.collection("counter").updateOne(
+        { name: "numberOfPost" },
+        { $inc: { totalPost: 1 } },
+        function (err, result) {
+          if (err) {
+            return console.log(err);
+          }
+        }
+      );
+    });
+  });
+});
+
+// "/delete" 경로로 DELETE 요청 처리
+app.delete("/delete", (req, res) => {
+  console.log(req.body);
+
+  // 문자로 출력되는  "_id"를 정수로 변환 후, 할당
+  req.body._id = parseInt(req.body._id);
+
+  let deleteData = { _id: req.body._id, writer: req.user._id };
+
+  // req.body에 담겨온 게시물 번호를 가진 글을 db에서 찾아 삭제
+  db.collection("post").deleteOne(deleteData, function (err, result) {
+    console.log("삭제완료");
+    if (result) {
+      console.log(result);
+    }
+    res.status(200).send({ message: "성공했습니다" });
   });
 });
