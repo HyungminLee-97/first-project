@@ -1,4 +1,4 @@
-var router = require("express").Router();
+let router = require("express").Router();
 
 //로그인 검증
 function loginVerification(req, res, next) {
