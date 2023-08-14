@@ -3,9 +3,10 @@ let router = require("express").Router();
 //로그인 검증
 function loginVerification(req, res, next) {
   if (req.user) {
+    console.log(req.user);
     next();
   } else {
-    res.send("로그인 상태가 아닙니다.");
+    res.send("<script>alert('로그인 후 이용 가능합니다.');</script>");
   }
 }
 

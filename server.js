@@ -265,6 +265,44 @@ app.delete("/delete", (req, res) => {
   });
 });
 
+//이미지 업로드 - multer 라이브러리 사용법 시작
+let multer = require("multer");
+let storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./public/image");
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  },
+  filefilter: function (req, file, cb) {
+    let ext = path.extname(file.originalname);
+    if (ext !== ".png" && ext !== ".jpg" && ext !== ".jpeg") {
+      return callback(new Error("PNG, JPG만 업로드하세요"));
+    }
+    callback(null, true);
+  },
+  limits: {
+    fileSize: 1024 * 1024,
+  },
+});
+
+let upload = multer({ storage: storage });
+//이미지 업로드 - multer 라이브러리 사용법 끝
+
+// 특정 페이지 방문 시, "/upload.ejs" 보여줌
+app.get("/upload", (req, res) => {
+  res.render("upload.ejs");
+});
+// 업로드한 이미지 "/public/image"에 저장
+app.post("/upload", upload.single("profile"), (req, res) => {
+  res.send("업로드 완료");
+});
+
+//업로드된 이미지 출력
+app.get("/image/:imageName", function (req, res) {
+  res.sendFile(__dirname + "/public/image/" + req.params.imageName);
+});
+
 //예제
 app.use("/shop", require("./routes/shop.js"));
 
