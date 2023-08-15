@@ -267,7 +267,7 @@ app.get("/chat", loginVerification, (req, res) => {
   db.collection("chatroom")
     .find({ member: req.user._id })
     .toArray()
-    .then(() => {
+    .then((result) => {
       res.render("chat.ejs", { data: result });
     });
 });
