@@ -4,6 +4,7 @@ const app = express();
 const MongoClient = require("mongodb").MongoClient;
 const methodOverride = require("method-override");
 const bodyParser = require("body-parser");
+const { ObjectId } = require("mongodb");
 
 require("dotenv").config();
 
@@ -244,6 +245,31 @@ app.post("/add", (req, res) => {
       );
     });
   });
+});
+
+// 채팅 기능
+app.post("/chatroom", loginVerification, (req, res) => {
+  let chatInput = {
+    title: req.body.chatReceive + "와" + req.user._id + "의 채팅방",
+    member: [ObjectId(req.body.chatReceive), req.user._id],
+    date: new Date(),
+  };
+
+  db.collection("chatroom")
+    .insertOne(chatInput)
+    .then((result) => {
+      res.send("전송 완료");
+    });
+});
+
+// "/chat.ejs" 접속
+app.get("/chat", loginVerification, (req, res) => {
+  db.collection("chatroom")
+    .find({ member: req.user._id })
+    .toArray()
+    .then(() => {
+      res.render("chat.ejs", { data: result });
+    });
 });
 
 // "/delete" 경로로 DELETE 요청 처리

@@ -38,6 +38,15 @@
           <h4>할 일 제목: <%= posts[i].title %></h4>
           <p>할 일 마감날짜: <%= posts[i].date %></p>
           <!--서버에서 가져온 할 일 리스트-->
+          <!--채팅 버튼-->
+          <button
+            type="button"
+            class="btn btn-secondary chat"
+            data-id="<%= posts[i].writer%>"
+          >
+            채팅하기
+          </button>
+          <!--채팅 버튼-->
           <!--삭제 버튼-->
           <button
             type="button"
@@ -82,6 +91,16 @@
           .fail(function (a, b, c) {
             console.log("실패했습니다", a, b, c);
           });
+      });
+    </script>
+
+    <!--채팅 버튼 누르면 서버로 정보 보내기-->
+    <script>
+      $(".chat").click(function (e) {
+        let id = e.target.dataset.id;
+        $.post("/chatroom", { chatReceive: id }).then(() => {
+          console.log("채팅방 게시물 생성완료");
+        });
       });
     </script>
 
