@@ -272,7 +272,23 @@ app.get("/chat", loginVerification, (req, res) => {
     });
 });
 
-// "/delete" 경로로 DELETE 요청 처리
+// 채팅창에 친 데이터 DB 저장
+app.post("/message", loginVerification, (req, res) => {
+  let saveData = {
+    parent: req.body.parent,
+    content: req.body.content,
+    userid: req.user._id,
+    date: new Date(),
+  };
+  db.collection("message")
+    .insertOne(saveData)
+    .then(() => {
+      console.log("DB 저장 성공");
+      res.send("DB 저장 성공");
+    });
+});
+
+// "/delete" 경로로 list내 게시물 DELETE 요청 처리
 app.delete("/delete", (req, res) => {
   console.log(req.body);
 

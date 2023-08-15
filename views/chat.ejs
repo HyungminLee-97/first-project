@@ -24,15 +24,11 @@
         <div class="col-3">
           <ul class="list-group chat-list">
             <% for(let i = 0; i < data.length; i++){ %>
-            <li class="list-group-item">
+            <li class="list-group-item" data-id="<%= data[i]._id%>">
               <h6><%= data[i].title %></h6>
               <h6 class="text-small"><%= data[i].member[0] %></h6>
             </li>
             <% } %>
-            <li class="list-group-item">
-              <h6>채팅방2</h6>
-              <h6 class="text-small">채팅방설명</h6>
-            </li>
           </ul>
         </div>
 
@@ -68,5 +64,27 @@
       integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
       crossorigin="anonymous"
     ></script>
+
+    <!--메세지 전송에 필요한 jquery-->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <!--전송 버튼 누르면 서로 게시물 전송-->
+    <script>
+      let clickChatroomId;
+      $(".list-group-item").click(function () {
+        clickChatroomId = this.dataset.id;
+      });
+
+      $("#send").click(function () {
+        let chatInput = $("#chat-input").val();
+        let sendData = {
+          parent: clickChatroomId,
+          content: chatInput,
+        };
+        $.post("/message", sendData).then(() => {
+          console.log("전송 성공");
+        });
+      });
+    </script>
+    <!--전송 버튼 누르면 서로 게시물 전송-->
   </body>
 </html>
