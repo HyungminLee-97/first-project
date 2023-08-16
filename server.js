@@ -5,6 +5,9 @@ const MongoClient = require("mongodb").MongoClient;
 const methodOverride = require("method-override");
 const bodyParser = require("body-parser");
 const { ObjectId } = require("mongodb");
+const http = require("http").createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(http);
 
 require("dotenv").config();
 
@@ -21,13 +24,25 @@ MongoClient.connect(process.env.DB_URL, function (err, client) {
   if (err) return console.log(err);
   // db 연결
   db = client.db("hm-project");
-  app.listen(process.env.PORT, function () {
+  http.listen(process.env.PORT, function () {
     console.log("8080 포트가 열렸습니다.");
   });
 });
 //.env - 끝
 
-//기본 세팅(expres 라이브러리, body-parser, Mongodb, methodOverride, dotenv) - 끝
+// "/socket" 접속하면 socket.ejs 보여주기
+app.get("/socket", (req, res) => {
+  res.render("socket.ejs");
+});
+// WebSocket 접속 시, 서버가 뭔가 실행하고 싶으면
+io.on("connection", (socket) => {
+  console.log("유저 접속");
+
+  socket.on("user-send", (data) => {
+    console.log(data);
+  });
+});
+//기본 세팅(expres 라이브러리, body-parser, Mongodb, methodOverride, dotenv, socket.io) - 끝
 
 // "/" 출력
 app.get("/", (req, res) => {
