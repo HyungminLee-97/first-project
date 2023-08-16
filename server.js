@@ -288,6 +288,23 @@ app.post("/message", loginVerification, (req, res) => {
     });
 });
 
+// 서버와 유저간 실시간 소통채널 열기
+app.get("/message/:id", loginVerification, function (req, res) {
+  res.writeHead(200, {
+    Connection: "keep-alive",
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+  });
+
+  db.collection("message")
+    .find({ parent: req.params.id })
+    .toArray()
+    .then((result) => {
+      res.write("event: test\n");
+      res.write(`data: ${JSON.stringify(result)}\n\n`);
+    });
+});
+
 // "/delete" 경로로 list내 게시물 DELETE 요청 처리
 app.delete("/delete", (req, res) => {
   console.log(req.body);

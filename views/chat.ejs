@@ -70,8 +70,14 @@
     <!--전송 버튼 누르면 서로 게시물 전송-->
     <script>
       let clickChatroomId;
+      let eventSource;
       $(".list-group-item").click(function () {
         clickChatroomId = this.dataset.id;
+
+        eventSource = new EventSource("/message/" + clickChatroomId);
+        eventSource.addEventListener("test", function (e) {
+          console.log(JSON.parse(e.data));
+        });
       });
 
       $("#send").click(function () {
