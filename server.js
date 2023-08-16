@@ -303,6 +303,16 @@ app.get("/message/:id", loginVerification, function (req, res) {
       res.write("event: test\n");
       res.write(`data: ${JSON.stringify(result)}\n\n`);
     });
+  // (채팅) DB 변동사항 실시간 업데이트용 Change Stream 설정
+  const pipeline = [{ $match: { "fullDocument.parent": req.params.id } }];
+
+  const collection = db.collection("message");
+  const changeStream = collection.watch(pipeline);
+
+  changeStream.on("change", (result) => {
+    res.write("event: test\n");
+    res.write(`data: ${JSON.stringify([result.fullDocument])}\n\n`);
+  });
 });
 
 // "/delete" 경로로 list내 게시물 DELETE 요청 처리

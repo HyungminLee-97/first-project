@@ -73,10 +73,20 @@
       let eventSource;
       $(".list-group-item").click(function () {
         clickChatroomId = this.dataset.id;
+        $(".chat-content").html("");
+
+        if (eventSource != undefined) {
+          eventSource.close();
+        }
 
         eventSource = new EventSource("/message/" + clickChatroomId);
         eventSource.addEventListener("test", function (e) {
-          console.log(JSON.parse(e.data));
+          let bringData = JSON.parse(e.data);
+          bringData.forEach((i) => {
+            $(".chat-content").append(
+              '<li><span class="chat-box">' + i.content + "</span></li>"
+            );
+          });
         });
       });
 
