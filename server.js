@@ -38,10 +38,23 @@ app.get("/socket", (req, res) => {
 io.on("connection", (socket) => {
   console.log("유저 접속");
 
+  socket.on("room1-send", (data) => {
+    io.to("room1").emit("broadcast", data);
+  });
+
+  socket.on("joinroom", (data) => {
+    socket.join("room1");
+    console.log("채팅방1 접속");
+  });
+
   socket.on("user-send", (data) => {
-    console.log(data);
+    //서버 -> 유저 메시지 전송 io.emit()
+    io.emit("broadcast", data);
+    // // 서버 -> 유저 1명간 단독 소통
+    // io.to(socket.id).emit("broadcast", data);
   });
 });
+
 //기본 세팅(expres 라이브러리, body-parser, Mongodb, methodOverride, dotenv, socket.io) - 끝
 
 // "/" 출력
