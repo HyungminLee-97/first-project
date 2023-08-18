@@ -30,10 +30,9 @@ MongoClient.connect(process.env.DB_URL, function (err, client) {
 });
 //.env - 끝
 
-// "/socket" 접속하면 socket.ejs 보여주기
-app.get("/socket", (req, res) => {
-  res.render("socket.ejs");
-});
+// 채팅방 세부 - "/socket" 접속하면 socket.ejs 보여주기
+app.use("/chat", require("./routes/chat.js"));
+
 // WebSocket 접속 시, 서버가 뭔가 실행하고 싶으면
 io.on("connection", (socket) => {
   console.log("유저 접속");
@@ -58,14 +57,10 @@ io.on("connection", (socket) => {
 //기본 세팅(expres 라이브러리, body-parser, Mongodb, methodOverride, dotenv, socket.io) - 끝
 
 // "/" 출력
-app.get("/", (req, res) => {
-  res.render("index.ejs");
-});
+app.use("/", require("./routes/index.js"));
 
 // "/write" 출력
-app.get("/write", (req, res) => {
-  res.render("write.ejs");
-});
+app.use("/post", require("./routes/post.js"));
 
 //"/list" 검색 기능
 app.get("/search", (req, res) => {
@@ -94,6 +89,8 @@ app.get("/search", (req, res) => {
 });
 
 // "/list" 출력
+app.use("/post", require("./routes/post.js"));
+
 app.get("/list", (req, res) => {
   //db에 저장된 post라는 collection 안의 제목이 @인 데이터 꺼내기
   db.collection("post")
@@ -150,9 +147,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // "/login.ejs" 이동
-app.get("/login", (req, res) => {
-  res.render("login.ejs");
-});
+app.use("/login", require("./routes/user.js"));
 
 //아이디 비번 검증
 //login 시, index로 리다이렉트
@@ -176,7 +171,7 @@ function loginVerification(req, res, next) {
   if (req.user) {
     next();
   } else {
-    res.send("로그인 상태가 아닙니다.");
+    res.send("로그인 후 이용 가능합니다.");
   }
 }
 
@@ -219,9 +214,7 @@ passport.deserializeUser((id, done) => {
 
 //회원 가입 기능
 // "/signin" 이동
-app.get("/signin", (req, res) => {
-  res.render("signin.ejs");
-});
+app.use("/user", require("./routes/user.js"));
 // db.collection("login")에 입력된 회원 정보 저장
 app.post("/signin", (req, res) => {
   let userName = req.body.name;
@@ -399,9 +392,3 @@ app.post("/upload", upload.single("profile"), (req, res) => {
 app.get("/image/:imageName", function (req, res) {
   res.sendFile(__dirname + "/public/image/" + req.params.imageName);
 });
-
-//예제
-app.use("/shop", require("./routes/shop.js"));
-
-//문제
-app.use("/board/sub", require("./routes/board.js"));

@@ -20,12 +20,18 @@
       referrerpolicy="no-referrer"
     ></script>
 
-    <div>채팅방</div>
-    <div id="content"></div>
-    <input id="input1" />
-    <button id="send">서버에 메세지 보내기</button>
-    <button id="room1">채팅방1 입장</button>
-    <button id="room1-send">채팅방1에서 메세지 보내기</button>
+    <!--nav.html-->
+    <%- include('nav.html') %>
+
+    <div class="container">
+      <div>채팅방</div>
+      <div id="content"></div>
+      <input id="input1" />
+      <button id="send">서버에 메세지 보내기</button>
+      <button id="room1">채팅방1 입장</button>
+      <button id="room1-send">채팅방1에서 메세지 보내기</button>
+    </div>
+
     <script>
       let socket = io();
 
